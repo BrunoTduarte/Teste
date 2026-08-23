@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      # Checkov: CKV_DOCKER_4 / CKV2_DOCKER_5 — secrets em plaintext no compose
+      SECRET_KEY: "my-super-secret-key-do-not-share"
+      DATABASE_URI: "postgresql://admin:Senha123!@db.prod.internal:5432/appdb"
+      AWS_ACCESS_KEY_ID: "AKIAIOSFODNN7EXAMPLE"
+      AWS_SECRET_ACCESS_KEY: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+    # Sem healthcheck — Checkov: CKV_DOCKER_2
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_PASSWORD: "Senha123!"
+      POSTGRES_USER: "admin"
+      POSTGRES_DB: "appdb"
+    # Sem volume separado para dados
+    # Porta exposta diretamente — Checkov: CKV_DOCKER_8
+    ports:
+      - "5432:5432"
